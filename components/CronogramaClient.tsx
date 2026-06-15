@@ -14,9 +14,10 @@ type Tab = "timeline" | "calendar" | "table";
 interface Props {
   items: (ItemWithCategory & { category: Category })[];
   categories: Category[];
+  readonly?: boolean;
 }
 
-export default function CronogramaClient({ items, categories }: Props) {
+export default function CronogramaClient({ items, categories, readonly = false }: Props) {
   const router = useRouter();
   const [tab, setTab] = useState<Tab>("timeline");
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
@@ -68,18 +69,22 @@ export default function CronogramaClient({ items, categories }: Props) {
               <p className="text-white/40 text-xs mt-0.5">Campanha · 18 jun — 31 jul 2026 · 06 Anos</p>
             </div>
             <div className="flex items-center gap-2 print:hidden">
-              <button
-                onClick={() => setShowCategories(true)}
-                className="px-3 py-2 text-xs border border-white/10 hover:border-white/30 text-white/60 hover:text-white rounded-lg transition-colors"
-              >
-                ⚙ Categorias
-              </button>
-              <button
-                onClick={() => openNewItem()}
-                className="px-3 py-2 text-xs border border-white/10 hover:border-white/30 text-white/60 hover:text-white rounded-lg transition-colors"
-              >
-                + Item
-              </button>
+              {!readonly && (
+                <>
+                  <button
+                    onClick={() => setShowCategories(true)}
+                    className="px-3 py-2 text-xs border border-white/10 hover:border-white/30 text-white/60 hover:text-white rounded-lg transition-colors"
+                  >
+                    ⚙ Categorias
+                  </button>
+                  <button
+                    onClick={() => openNewItem()}
+                    className="px-3 py-2 text-xs border border-white/10 hover:border-white/30 text-white/60 hover:text-white rounded-lg transition-colors"
+                  >
+                    + Item
+                  </button>
+                </>
+              )}
               <button
                 onClick={handlePrint}
                 className="px-4 py-2 text-xs bg-[#F4711E] hover:bg-[#e0621a] text-white font-semibold rounded-lg transition-colors"
@@ -138,23 +143,24 @@ export default function CronogramaClient({ items, categories }: Props) {
         {tab === "timeline" && (
           <TimelineView
             items={filteredItems}
-            onItemClick={setEditingItem}
+            onItemClick={readonly ? () => {} : setEditingItem}
             printRef={timelinePrintRef}
           />
         )}
         {tab === "calendar" && (
           <CalendarView
             items={filteredItems}
-            onItemClick={setEditingItem}
-            onDayClick={openNewItem}
+            onItemClick={readonly ? () => {} : setEditingItem}
+            onDayClick={readonly ? () => {} : openNewItem}
             printRef={calendarPrintRef}
           />
         )}
         {tab === "table" && (
           <TableView
             items={filteredItems}
-            onItemClick={setEditingItem}
-            onNewItem={() => openNewItem()}
+            onItemClick={readonly ? () => {} : setEditingItem}
+            onNewItem={readonly ? () => {} : () => openNewItem()}
+            readonly={readonly}
             printRef={tablePrintRef}
           />
         )}

@@ -8,20 +8,23 @@ interface Props {
   items: (ItemWithCategory & { category: Category })[];
   onItemClick: (item: ItemWithCategory & { category: Category }) => void;
   onNewItem: () => void;
+  readonly?: boolean;
   printRef?: React.RefObject<HTMLDivElement | null>;
 }
 
-export default function TableView({ items, onItemClick, onNewItem, printRef }: Props) {
+export default function TableView({ items, onItemClick, onNewItem, readonly = false, printRef }: Props) {
   return (
     <div ref={printRef} className="max-w-5xl mx-auto px-4 py-6">
       <div className="flex justify-between items-center mb-4">
         <p className="text-white/40 text-sm">{items.length} itens</p>
-        <button
-          onClick={onNewItem}
-          className="px-4 py-2 bg-[#F4711E] hover:bg-[#e0621a] text-white text-sm font-semibold rounded-lg transition-colors print:hidden"
-        >
-          + Novo item
-        </button>
+        {!readonly && (
+          <button
+            onClick={onNewItem}
+            className="px-4 py-2 bg-[#F4711E] hover:bg-[#e0621a] text-white text-sm font-semibold rounded-lg transition-colors print:hidden"
+          >
+            + Novo item
+          </button>
+        )}
       </div>
 
       <div className="rounded-2xl border border-white/8 overflow-hidden">
@@ -33,7 +36,7 @@ export default function TableView({ items, onItemClick, onNewItem, printRef }: P
               <th className="text-left text-xs text-white/40 font-semibold uppercase tracking-wider px-4 py-3">Categoria</th>
               <th className="text-left text-xs text-white/40 font-semibold uppercase tracking-wider px-4 py-3">Título</th>
               <th className="text-left text-xs text-white/40 font-semibold uppercase tracking-wider px-4 py-3">Destaque</th>
-              <th className="text-left text-xs text-white/40 font-semibold uppercase tracking-wider px-4 py-3 print:hidden">Ações</th>
+              {!readonly && <th className="text-left text-xs text-white/40 font-semibold uppercase tracking-wider px-4 py-3 print:hidden">Ações</th>}
             </tr>
           </thead>
           <tbody>
@@ -59,14 +62,16 @@ export default function TableView({ items, onItemClick, onNewItem, printRef }: P
                   <td className="px-4 py-3 text-sm">
                     {item.isHighlight ? <span className="text-[#F4711E]">★ Sim</span> : <span className="text-white/20">—</span>}
                   </td>
-                  <td className="px-4 py-3 print:hidden">
-                    <button
-                      onClick={() => onItemClick(item)}
-                      className="text-xs text-white/40 hover:text-white border border-white/10 hover:border-white/30 px-3 py-1 rounded-lg transition-colors"
-                    >
-                      Editar
-                    </button>
-                  </td>
+                  {!readonly && (
+                    <td className="px-4 py-3 print:hidden">
+                      <button
+                        onClick={() => onItemClick(item)}
+                        className="text-xs text-white/40 hover:text-white border border-white/10 hover:border-white/30 px-3 py-1 rounded-lg transition-colors"
+                      >
+                        Editar
+                      </button>
+                    </td>
+                  )}
                 </tr>
               );
             })}
